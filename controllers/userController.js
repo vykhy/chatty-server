@@ -13,11 +13,11 @@ const signup = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const usernameExists = await User.count({ username: username });
+    const usernameExists = await User.count({ where: { username: username } });
     if (usernameExists > 0) throw new Error("Username is already taken");
 
-    const emailExists = await User.count({ email: email });
-    if (emailExists > 0) throw new Error("email is already taken");
+    const emailExists = await User.count({ where: { email: email } });
+    if (emailExists > 0) throw new Error("Email is already taken");
 
     const newUser = await User.create({
       username,
@@ -42,11 +42,10 @@ const login = async (req, res) => {
         [Op.or]: [{ email: usernameOrEmail }, { username: usernameOrEmail }],
       },
     });
-    console.log(user);
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ user_id: user.user_id }, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
     const userData = user.get({ plain: true });
@@ -81,4 +80,25 @@ const editUser = async (req, res) => {
   }
 };
 
-export { signup, login, getUser, editUser };
+const getUsers = async (req, res) => {
+  const { search } = req.query;
+  const searchString = `%${search}%`;
+
+  try {
+    const users = await User.findAll({
+      where: {
+        [Op.or]: [
+          { email: { [Op.like]: searchString } },
+          { username: { [Op.like]: searchString } },
+        ],
+        user_id: { [Op.ne]: req.user.user_id },
+      },
+      attributes: { exclude: ["password"] },
+    });
+    return res.status(200).json({ data: { users } });
+  } catch (error) {
+    console.log(error.message);
+    return res.status(500).json({ message: "There was an error" });
+  }
+};
+export { signup, login, getUser, editUser, getUsers };
