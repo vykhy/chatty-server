@@ -59,6 +59,7 @@ export async function createChat(req, res) {
       username: user2.user_name,
       messages: [],
       page: 1,
+      is_group: false,
       created_at: chat.dataValues.createdAt,
     };
     const obj2 = {
@@ -69,6 +70,7 @@ export async function createChat(req, res) {
       username: user1.user_name,
       messages: [],
       page: 1,
+      is_group: false,
       created_at: chat.dataValues.createdAt,
     };
 
@@ -86,7 +88,7 @@ export async function getChats(req, res) {
   try {
     const [chats] = await sequelize.query(
       `
-     SELECT A.chat_id, B.user_id, C.username, C.email, C.profile_picture, 1 as page,
+     SELECT A.chat_id, A.is_group, B.user_id, C.username, C.email, C.profile_picture, 1 as page,
        IFNULL(
         (
             SELECT JSON_ARRAYAGG(
@@ -118,6 +120,9 @@ export async function getChats(req, res) {
         replacements: { userId },
       }
     );
+    chats.forEach((chat) => {
+      chat.messages = JSON.parse(chat.messages);
+    });
     return res.status(200).json({ chats });
   } catch (error) {
     console.log(error.message);

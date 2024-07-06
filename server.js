@@ -9,6 +9,7 @@ import { Server } from "socket.io";
 
 import userRouter from "./routers/userRouter.js";
 import chatRouter from "./routers/chatRouter.js";
+import { handleNewMessage } from "./services/messageService.js";
 
 export const userIdSocketIdMap = {};
 export const socketIdUserIdMap = {};
@@ -44,6 +45,10 @@ socket.use((socket, next) => {
 
 socket.on("connection", (io) => {
   console.log("Socket just connected");
+
+  io.on("send-message", (data) => {
+    handleNewMessage(data);
+  });
 
   io.on("disconnect", () => {
     const userId = socketIdUserIdMap[io.id];

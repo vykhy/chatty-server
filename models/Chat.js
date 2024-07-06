@@ -16,6 +16,7 @@ const Chat = sequelize.define(
     is_group: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
+      defaultValue: false,
     },
   },
   {
