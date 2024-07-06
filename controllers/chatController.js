@@ -96,10 +96,13 @@ export async function getChats(req, res) {
                     'message_id', D.message_id,
                     'user_id', D.user_id,
                     'created_at', D.createdAt,
-                    'content', D.content
+                    'content', D.content,
+                    'delivered_at', E.delivered_at,
+                    'read_at', E.read_at
                 )
             )
             FROM Messages D 
+            LEFT JOIN MessageReceipts E ON E.message_id = D.message_id
             WHERE D.chat_id = A.chat_id 
             ORDER BY D.createdAt 
             LIMIT 50

@@ -9,7 +9,11 @@ import { Server } from "socket.io";
 
 import userRouter from "./routers/userRouter.js";
 import chatRouter from "./routers/chatRouter.js";
-import { handleNewMessage } from "./services/messageService.js";
+import {
+  handleMessageDelivered,
+  handleMessageRead,
+  handleNewMessage,
+} from "./services/messageService.js";
 
 export const userIdSocketIdMap = {};
 export const socketIdUserIdMap = {};
@@ -54,6 +58,13 @@ socket.on("connection", (io) => {
 
   io.on("send-message", (data) => {
     handleNewMessage(data);
+  });
+
+  io.on("message-delivered", (data) => {
+    handleMessageDelivered(data);
+  });
+  io.on("message-read", (data) => {
+    handleMessageRead(data);
   });
 
   io.on("disconnect", () => {

@@ -39,6 +39,12 @@ const MessageReceipt = sequelize.define(
   {
     timestamps: true,
     tableName: "MessageReceipts",
+    indexes: [
+      {
+        unique: true,
+        fields: ["message_id", "user_id"],
+      },
+    ],
   }
 );
 
