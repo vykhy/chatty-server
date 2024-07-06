@@ -33,4 +33,6 @@ const ChatMember = sequelize.define(
   }
 );
 
+ChatMember.removeAttribute("id");
+
 export default ChatMember;

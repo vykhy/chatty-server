@@ -31,10 +31,6 @@ const Message = sequelize.define(
       type: DataTypes.TEXT,
       allowNull: false,
     },
-    sent_at: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
-    },
   },
   {
     timestamps: true,

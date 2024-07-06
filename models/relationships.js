@@ -7,6 +7,12 @@ import MessageReceipt from "./MessageReceipt.js";
 Chat.belongsToMany(User, { through: ChatMember, foreignKey: "chat_id" });
 User.belongsToMany(Chat, { through: ChatMember, foreignKey: "user_id" });
 
+Chat.hasMany(ChatMember, { foreignKey: "chat_id", as: "ChatMembers" });
+ChatMember.belongsTo(Chat, { foreignKey: "chat_id", as: "Chat" });
+
+// ChatMember.hasOne(User, { foreignKey: "user_id" });
+// User.hasMany(ChatMember, { foreignKey: "user_id" });
+
 Chat.hasMany(Message, { foreignKey: "chat_id" });
 Message.belongsTo(Chat, { foreignKey: "chat_id" });
 

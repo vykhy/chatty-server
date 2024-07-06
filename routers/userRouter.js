@@ -14,6 +14,6 @@ router.post("/signup", signup);
 router.post("/login", login);
 router.get("/", authenticate, getUsers);
 router.get("/:id", authenticate, getUser);
-router.put("/:id/edit", authenticate, editUser);
+router.put("/edit", authenticate, editUser);
 
 export default router;

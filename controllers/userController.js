@@ -69,7 +69,7 @@ const getUser = async (req, res) => {
 const editUser = async (req, res) => {
   const { firstName, lastName, email } = req.body;
   try {
-    const user = await User.findByPk(req.user.id); // Assume req.user.id is set by authentication middleware
+    const user = await User.findByPk(req.user.user_id); // Assume req.user.id is set by authentication middleware
     user.firstName = firstName || user.firstName;
     user.lastName = lastName || user.lastName;
     user.email = email || user.email;
