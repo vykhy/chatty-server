@@ -1,9 +1,10 @@
-import { socket, userIdSocketIdMap, socketIdUserIdMap } from "./../server.js";
+import { socket, userIdSocketIdMap } from "./../server.js";
 
 export function emitToUser(userId, event, data) {
-  const userSocketId = userIdSocketIdMap[userId];
-  console.log(userSocketId);
-  if (userSocketId) {
-    socket.to(userSocketId).emit(event, data);
+  const userSocketIds = userIdSocketIdMap[userId];
+  if (userSocketIds) {
+    userSocketIds.forEach((socketId) => {
+      socket.to(socketId).emit(event, data);
+    });
   }
 }

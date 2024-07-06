@@ -37,8 +37,14 @@ export const socket = new Server(httpServer, {
 
 socket.use((socket, next) => {
   if (socket.handshake && socket.handshake.query.user_id) {
-    socketIdUserIdMap[socket.id] = socket.handshake.query.user_id;
-    userIdSocketIdMap[socket.handshake.query.user_id] = socket.id;
+    const userId = socket.handshake.query.user_id;
+
+    socketIdUserIdMap[socket.id] = userId;
+    if (userIdSocketIdMap[userId]) {
+      userIdSocketIdMap[userId].push(socket.id);
+    } else {
+      userIdSocketIdMap[socket.handshake.query.user_id] = [socket.id];
+    }
   }
   next();
 });
@@ -53,9 +59,18 @@ socket.on("connection", (io) => {
   io.on("disconnect", () => {
     const userId = socketIdUserIdMap[io.id];
     console.log("Disconnecting user " + userId);
-    delete socketIdUserIdMap[socket.id];
+    delete socketIdUserIdMap[io.id];
     if (userId) {
-      delete userIdSocketIdMap[userId];
+      if (
+        userIdSocketIdMap[userId].filter((socketId) => socketId !== io.id)
+          .length > 0
+      ) {
+        userIdSocketIdMap[userId] = userIdSocketIdMap[userId].filter(
+          (socketId) => socketId !== io.id
+        );
+      } else {
+        delete userIdSocketIdMap[userId];
+      }
     }
   });
 });
